@@ -9,7 +9,7 @@ For the program to work correctly, you will need a directory with a large number
 
 With the cloned project, type the command:
 
-$ make
+#####$ make
 
 You only need to do this the first time!
 
@@ -17,10 +17,12 @@ You only need to do this the first time!
 
 From now on, every time you want to make a photomosaic of a PPM image, all you have to do is run the command:
 
-$ ./mosaico (arguments)
+#####$ ./mosaico (arguments)
 
 Where it is possible to pass 3 arguments. They are not mandatory, but I am sure you will need them all, since the program has default values for them that are not very useful most of the time.
 
--i NameOfTheImage.ppm       		("stdin" by default)
--o NameOfThePhotomosaic.ppm         ("stdout" by default)
--p NameOfTheTilesDirectory          ("./tiles/" by default)
+#####-i NameOfTheImage.ppm
+
+#####-o NameOfThePhotomosaic.ppm
+
+#####-p NameOfTheTilesDirectory
