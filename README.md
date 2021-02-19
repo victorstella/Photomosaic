@@ -1,5 +1,4 @@
 # Photomosaic
-*by Victor Daniel Stella Paiva*
 
 
 This is a plain C program that make a copy of an PPM image, but using several smaller images to compose the original by color proximity.
