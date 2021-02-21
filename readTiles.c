@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include "PPMImage.h"
 
-//Function to read blocks of tiles, allocate blocks at once and fill them with information readed
+//Function to read the tiles directory and allocate all its tiles
 PPMImgInfo **readTiles( char *tilesDir ) {
 
   DIR *dir = opendir( tilesDir );
@@ -18,50 +18,43 @@ PPMImgInfo **readTiles( char *tilesDir ) {
     exit( 1 );
   }
   struct dirent *dirEnt;
-
-  //Array of tiles structs to be returned
-  PPMImgInfo **tilesList = NULL;
-
-  //Size of block of tiles to allocate each time (200 tiles) and number of blocks readed
-  int blockSize = 300;
-  int numOfBlocks = 0;
-
-  //Current file path to call readImg on each tile 
-  char filePath[ 1024 ];
-
-  //Scrolls through files in directory, filling each block and restarting with 0
-  int fileCount = blockSize;
-
-  /*While the directory entry is valid and the array is smaller than 2000 positions,
-  it keeps reallocating space and reading all the tiles*/
-  dirEnt = readdir( dir );
-  while ( dirEnt && blockSize * numOfBlocks + fileCount < 1800 ) {
-    
-    //Check the need to realloc (current block is full)
-    if( fileCount == blockSize ) {
-      fileCount = 0;
-      numOfBlocks++;
-      tilesList = realloc( tilesList, numOfBlocks * blockSize * sizeof( PPMImgInfo * ) );
-    }
-      
-    //Check if the entry is a regular file and if contains '.ppm' in its name 
-    if( dirEnt->d_type == DT_REG && strstr( dirEnt->d_name, ".ppm" ) != NULL ) {
-      
-      //Create the file path
-      sprintf( filePath, "%s/%s", tilesDir, dirEnt->d_name );
-
-      //Store the readed file in the array
-      tilesList[ ( numOfBlocks - 1 ) * blockSize + fileCount ] = readImg( filePath );
+  
+  /*Get the number of interesting files inside the directory (regular files that whose name ends with ".ppm"),
+  and returns the buffer to the start of the folder*/
+  int fileCount = 0;
+  while( ( dirEnt = readdir( dir ) ) != NULL ) {
+    if ( dirEnt->d_type == DT_REG && strstr( dirEnt->d_name, ".ppm" ) != NULL ) {
       fileCount++;
     }
+  }
+  rewinddir( dir );
 
-    //Go to next entry
+  /*Allocate memory for the list of tiles (based on fileCount) that will receive information
+  of each one of them and allocate their pixel data*/
+  PPMImgInfo **tilesList = ( PPMImgInfo ** ) malloc( ( fileCount + 1 ) * sizeof( PPMImgInfo * ) );
+
+  //Initialize the char pointer that will be reallocated to fit the size of every file path to be opened and readed
+  char *filePath = NULL;
+
+  /*Walks through the directory looking for files of interest, then calls the readImg function. When see a
+  file that it is not interesting, the fileCount remains unchanged at the end of the current loop*/
+  for( int i = 0; i < fileCount; i++ ) {
     dirEnt = readdir( dir );
+    if ( dirEnt->d_type == DT_REG && strstr( dirEnt->d_name, ".ppm" ) != NULL ) {
+    
+      filePath = realloc( filePath, ( strlen( tilesDir ) + strlen( dirEnt->d_name ) + 2 ) * sizeof( char ) );
+      sprintf( filePath, "%s/%s", tilesDir, dirEnt->d_name );
+      tilesList[ i ] = readImg( filePath );
+    
+    } else i--;
   }
 
-  //Set the last position of the array as NULL, close the directory and returns the array
-  tilesList[ ( numOfBlocks - 1 ) * blockSize + 1 ] = NULL;
-  closedir( dir );
+  //Set the last position of the tilesList to NULL
+  tilesList[ fileCount ] = NULL;
 
+  //Deallocate the filePath char pointer
+  free( filePath );
+  //Closes the tiles directory and returns the tilesList
+  closedir( dir );
   return tilesList;
 }

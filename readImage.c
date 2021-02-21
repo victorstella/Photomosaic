@@ -41,7 +41,7 @@ int readHeader( PPMImgInfo *img ) {
 }
 
 //Function to read a image and return its information
-PPMImgInfo *readImg( char *inputImgName ) {
+PPMImgInfo *readImg( const char *inputImgName ) {
 
   //Allocate a struct to receive the information of the image and return it
   PPMImgInfo *img;

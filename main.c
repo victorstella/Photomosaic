@@ -109,7 +109,7 @@ int main( int argc, char **argv ) {
     }
   }
 
-  //Free tile average array
+  //Free tiles average color array
   for( int i = 0; tilesList[ i ] != NULL ; i++ ) {
     free( tileColorAvg[ i ] );
   }

@@ -22,7 +22,7 @@ typedef struct {
 int readHeader( PPMImgInfo *image );
 
 //Function to read a image and return its information
-PPMImgInfo *readImg( char *inputImgName );
+PPMImgInfo *readImg( const char *inputImgName );
 
 //Function to read tiles directory
 PPMImgInfo **readTiles( char *tilesDir );
